@@ -1,0 +1,5 @@
+# VirusTotal API key.
+# Copy this file to config/vt-api-key.txt and paste your key below.
+# Get a free key at https://www.virustotal.com/gui/my-apikey
+# config/vt-api-key.txt is git-ignored - never commit your real key.
+PASTE_YOUR_VIRUSTOTAL_API_KEY_HERE

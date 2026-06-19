@@ -1,0 +1,12 @@
+# MISP instance configuration.
+# Copy to config/misp-config.yml and fill in. config/misp-config.yml is git-ignored.
+misp:
+  url: "https://misp.example.org"
+  api_key: "PASTE_YOUR_MISP_AUTH_KEY_HERE"
+  verify_ssl: true
+
+defaults:
+  tlp: "amber"            # white | clear | green | amber | amber+strict | red
+  distribution: 0          # 0 your org only, 1 community, 2 connected, 3 all
+  threat_level_id: 2       # 1 high, 2 medium, 3 low, 4 undefined
+  analysis: 1              # 0 initial, 1 ongoing, 2 complete

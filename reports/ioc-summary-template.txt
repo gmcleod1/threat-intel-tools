@@ -1,0 +1,22 @@
+IOC SUMMARY - {TITLE}
+Generated: {YYYY-MM-DD}
+TLP: {AMBER}
+
+[FILE HASHES]
+{sha256}
+{sha1}
+{md5}
+
+[NETWORK]
+{domains}
+{ipv4}
+{urls}
+
+[EMAIL]
+{emails}
+
+[HOST]
+{registry_paths}
+{file_paths}
+
+Notes: defanged for safe sharing. Re-fang before deploying to detection tooling.

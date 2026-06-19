@@ -1,0 +1,17 @@
+Incident Note - Suspected Emotet Delivery (synthetic example, not real malware)
+
+On 2026-06-15 a user reported a suspicious invoice email. The attachment was a
+macro-enabled document that, on open, reached out to hxxp://malicious-update[.]example/install.php
+and downloaded a payload.
+
+Observed indicators (defanged):
+  Sender:        billing@invoice-delivery[.]example
+  Dropper URL:   hxxps://malicious-update[.]example/install.php
+  C2 domains:    c2-node1[.]example, update-check[.]example
+  C2 IPs:        198.51.100.23, 203.0.113.77 (8.8.8.8 was a benign DNS lookup)
+  Payload SHA256: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08
+  Payload MD5:    5d41402abc4b2a76b9719d911017c592
+  Persistence:   HKCU\Software\Microsoft\Windows\CurrentVersion\Run\Updater
+
+The host also created C:\Users\Public\svchost.exe and beaconed every 60 seconds.
+Private/internal hosts seen (should be excluded): 192.168.1.10, 10.0.0.5.

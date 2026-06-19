@@ -1,0 +1,17 @@
+# Secrets — never commit
+config/vt-api-key.txt
+config/misp-config.yml
+.env
+
+# Working output (raw IOC dumps, enrichment results, generated reports)
+*.json
+!examples/*.json
+enriched-iocs.json
+iocs.json
+threat-report.md
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
