@@ -33,12 +33,22 @@ TLP_TAGS = {"white": "tlp:white", "clear": "tlp:clear", "green": "tlp:green",
             "amber": "tlp:amber", "amber+strict": "tlp:amber+strict", "red": "tlp:red"}
 
 
+def _check_lists(indicators):
+    """Reject non-list values so a bare string is never iterated char-by-char."""
+    for key, values in indicators.items():
+        if key in TYPE_MAP and not isinstance(values, (list, tuple)):
+            raise ValueError(
+                f"value for '{key}' must be a list, got {type(values).__name__}"
+            )
+    return indicators
+
+
 def load_indicators(path):
     with open(path, "r", encoding="utf-8") as fh:
         data = json.load(fh)
     # Accept either ioc-extractor output (has "indicators") or a flat dict.
     if "indicators" in data:
-        return data["indicators"]
+        return _check_lists(data["indicators"])
     if "enriched" in data:
         # Rebuild a typed dict from enriched records.
         rebuilt = {k: [] for k in TYPE_MAP}
@@ -52,7 +62,7 @@ def load_indicators(path):
             if key:
                 rebuilt[key].append(ind)
         return rebuilt
-    return data
+    return _check_lists(data)
 
 
 def build_event(indicators, info, tlp, analysis, threat_level):
@@ -95,7 +105,10 @@ def main():
     parser.add_argument("--output", "-o", default="misp-event.json")
     args = parser.parse_args()
 
-    indicators = load_indicators(args.iocs)
+    try:
+        indicators = load_indicators(args.iocs)
+    except ValueError as exc:
+        sys.exit(f"error: {exc}")
     event = build_event(indicators, args.info, args.tlp, args.analysis, args.threat_level)
     with open(args.output, "w", encoding="utf-8") as fh:
         json.dump(event, fh, indent=2)

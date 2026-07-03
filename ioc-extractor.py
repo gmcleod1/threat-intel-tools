@@ -24,9 +24,13 @@ DEFAULT_DOMAIN_DENYLIST = {
     "mitre.org", "wikipedia.org", "example.com", "schema.org", "w3.org",
 }
 
+# Interior segments may contain spaces (e.g. \Windows NT\), but the final
+# segment may not — otherwise the greedy match swallows prose that follows
+# the path on the same line ("...\Run\Updater from billing").
 REGISTRY_RE = re.compile(
     r"\b(?:HKLM|HKCU|HKCR|HKU|HKCC|HKEY_LOCAL_MACHINE|HKEY_CURRENT_USER|"
-    r"HKEY_CLASSES_ROOT|HKEY_USERS|HKEY_CURRENT_CONFIG)\\[\\\w\-. ]+",
+    r"HKEY_CLASSES_ROOT|HKEY_USERS|HKEY_CURRENT_CONFIG)"
+    r"(?:\\[\w\-. ]+)*\\[\w\-.]+",
     re.IGNORECASE,
 )
 URL_RE = re.compile(r"\b(?:https?|ftp)://[^\s<>\"'\]\)]+", re.IGNORECASE)
