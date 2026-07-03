@@ -1,5 +1,7 @@
 # Threat Intelligence Tools
 
+[![CI](https://github.com/gmcleod1/threat-intel-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/gmcleod1/threat-intel-tools/actions/workflows/ci.yml)
+
 Automation for IOC extraction, enrichment, and reporting. Pulls indicators from unstructured text, enriches via VirusTotal/Shodan, formats for MISP and other platforms.
 
 ## Tools Overview
@@ -32,6 +34,13 @@ Format IOCs for import into MISP (Malware Information Sharing Platform):
 - TLP and sharing restrictions
 - Export to MISP JSON format
 
+### STIX Formatter
+Format IOCs as a STIX 2.1 bundle (for TAXII 2.1 collections or STIX-native platforms):
+- One `Indicator` SDO per IOC, with a proper STIX pattern (`[ipv4-addr:value = '...']`, `[file:hashes.'SHA-256' = '...']`, etc.)
+- A `Grouping` SDO ties all indicators in a run together as one reportable unit
+- TLP applied via STIX `marking-definition` objects (white/green/amber/red)
+- Built on the official [`stix2`](https://pypi.org/project/stix2/) library, so output validates against the STIX 2.1 spec
+
 ## Project Structure
 
 ```
@@ -40,6 +49,9 @@ threat-intel-tools/
   ioc-extractor.py              # Parse and extract indicators
   vt-enricher.py                # VirusTotal API integration
   misp-formatter.py             # Format for MISP platform
+  stix-formatter.py             # Format as a STIX 2.1 bundle
+  tests/                        # pytest suite (unit + end-to-end pipeline tests)
+  .github/workflows/ci.yml     # CI: tests on Python 3.11-3.14
   config/
     vt-api-key.example.txt      # VirusTotal API key template
     misp-config.example.yml     # MISP instance config template
@@ -71,6 +83,12 @@ python vt-enricher.py --iocs iocs.json --output enriched-iocs.json
 ### 4. Generate intelligence report
 ```bash
 python reports/build-report.py --enriched enriched-iocs.json --output threat-report.md
+```
+
+### 5. Format for sharing (MISP or STIX/TAXII)
+```bash
+python misp-formatter.py --iocs iocs.json --info "Emotet campaign 2026-06" --tlp amber --output misp-event.json
+python stix-formatter.py --iocs iocs.json --name "Emotet campaign 2026-06" --tlp amber --output stix-bundle.json
 ```
 
 ## IOC Types and Examples
@@ -108,6 +126,19 @@ Threat intelligence reports follow this standard structure:
 - **Threat Actor Profile:** (If applicable) Attribution, objectives, known campaigns
 - **Recommendations:** Detection rules, defensive measures, threat hunting queries
 - **Appendix:** Full technical details, raw data, analysis artifacts
+
+## Testing
+
+The pytest suite covers extraction regressions (defanging, private-IP filtering,
+registry-path boundaries), STIX 2.1 output (every generated pattern is checked
+against the official `stix2patterns` grammar validator, hive normalization,
+TLP markings), MISP event structure, and end-to-end CLI runs including
+error-path exit codes. CI runs the suite on Python 3.11–3.14 on every push.
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
 
 ## Resources
 
